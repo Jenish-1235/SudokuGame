@@ -3,8 +3,10 @@ package com.game.sudokugame;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -54,8 +56,17 @@ public class LoadingAnimationView extends View {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                Intent signUpIntent = new Intent(getContext(), signUpScreen.class);
-                getContext().startActivity(signUpIntent);
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                if (sharedPreferences.contains("playerName") && !sharedPreferences.getString("playerName", "").isEmpty()) {
+                    Intent startGameIntent = new Intent(getContext(), startGame.class);
+                    startGameIntent.putExtra("playerName", sharedPreferences.getString("playerName", ""));
+                    getContext().startActivity(startGameIntent);
+                    ((Activity) getContext()).finish();
+                } else {
+                    Intent signUpIntent = new Intent(getContext(), signUpScreen.class);
+                    getContext().startActivity(signUpIntent);
+                    ((Activity) getContext()).finish();
+                }
             }
         });
         animator.start();
